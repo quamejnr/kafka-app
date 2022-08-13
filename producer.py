@@ -1,7 +1,6 @@
 from kafka import KafkaProducer
 import json
 import time
-
 from model import get_registered_user
 
 producer = KafkaProducer(
