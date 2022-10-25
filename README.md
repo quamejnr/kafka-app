@@ -1,12 +1,12 @@
 # kafka-app
 
 ## What is it?
-This is a simple application depicting an event driven architecture using Kafka. A producer is sending a registered user event and two services,
-user_service and messaging_service are consuming that event.
+This is a simple application depicting event collaboration with Kafka using the lifecycle of an order.
 
 ## Why this?
-Built this application to try and get a better understanding of Kafka.
+Built this application to gain better insight into the workings of Kafka
 
-## Future Works
-- Dockerize application
-- Add more details to ReadMe
+## How to use this?
+1. Run `docker-compose up` from the root of the application to get Kafka running.
+2. Open multiple terminals and run all but the `get_consumer()` functions in the handlers of the various services. 
+(Yeah I know it sounds stressful, I'm working on implementing an easier to way to run it, let me know if you have any ideas though)

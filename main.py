@@ -21,9 +21,12 @@ producer = KafkaProducer(
 )
 
 
-if __name__ == "__main__":
+def main():
     while True:
         order = get_order()
         print(order)
         producer.send("order_requested", order)
         time.sleep(10)
+
+if __name__ == "__main__":
+    main()

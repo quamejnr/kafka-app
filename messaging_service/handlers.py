@@ -1,5 +1,6 @@
 from kafka import KafkaConsumer
 import json
+import asyncio
 
 def get_consumer(topic: str) -> KafkaConsumer:
     consumer = KafkaConsumer(
@@ -9,6 +10,7 @@ def get_consumer(topic: str) -> KafkaConsumer:
         group_id="messaging-group",
         value_deserializer=lambda x: json.loads(x.decode("utf-8")),
     )
+    print("Messaging service listening...")
     return consumer
 
 def handle_order_confirmed():
@@ -18,6 +20,9 @@ def handle_order_confirmed():
         sale_id = msg.value['sale_id']
         print(f"Hello {username}, Your order: {sale_id}, has been confirmed.")
         
-        
-if __name__ == '__main__':
-    handle_order_confirmed()
+def handle_order_completed():
+    consumer = get_consumer('order_completed')
+    for msg in consumer:
+        username = msg.value["user"]
+        sale_id = msg.value['sale_id']
+        print(f"Hello {username}, Your order: {sale_id}, has been delivered.")

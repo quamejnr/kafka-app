@@ -1,7 +1,7 @@
 from kafka import KafkaProducer
 import json
 
-class PayementServiceProducer:
+class PaymentServiceProducer:
     def __init__(self) -> None:
         self.producer = KafkaProducer(
             bootstrap_servers=["localhost:9092"],

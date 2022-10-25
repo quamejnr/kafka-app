@@ -13,3 +13,6 @@ class OrderServiceProducer:
         
     def publish_to_order_confirmed(self, data):
         self.producer.send('order_confirmed', data)
+        
+    def publish_to_order_completed(self, data):
+        self.producer.send('order_completed', data)
