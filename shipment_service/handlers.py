@@ -5,6 +5,7 @@ from producer import ShipmentServiceProducer
 
 fake = Faker()
 
+
 def get_consumer(topic: str) -> KafkaConsumer:
     consumer = KafkaConsumer(
         topic,
@@ -18,28 +19,30 @@ def get_consumer(topic: str) -> KafkaConsumer:
 
 
 def handle_order_confirmed():
-    consumer = get_consumer('order_confirmed')
-    producer = ShipmentServiceProducer()  
+    consumer = get_consumer("order_confirmed")
+    producer = ShipmentServiceProducer()
     for msg in consumer:
         order = msg.value
-        order['shipment_status'] = "D"
+        order["shipment_status"] = "D"
         print("Shipment Prepared", order)
         producer.publish_shipment_prepared(order)
 
+
 def handle_shipment_prepared():
-    consumer = get_consumer('shipment_prepared')
-    producer = ShipmentServiceProducer()  
+    consumer = get_consumer("shipment_prepared")
+    producer = ShipmentServiceProducer()
     for msg in consumer:
         order = msg.value
-        order['shipment_status'] = "A"
+        order["shipment_status"] = "A"
         print("Shipment dispatched", order)
         producer.publish_to_shipment_dispatched(order)
-        
+
+
 def handle_shipment_dispatched():
-    consumer = get_consumer('shipment_dispatched')
-    producer = ShipmentServiceProducer()  
+    consumer = get_consumer("shipment_dispatched")
+    producer = ShipmentServiceProducer()
     for msg in consumer:
         order = msg.value
-        order['shipment_status'] = "C"
+        order["shipment_status"] = "C"
         print("Shipment delivered", order)
         producer.publish_to_shipment_delivered(order)

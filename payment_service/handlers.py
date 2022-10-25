@@ -6,6 +6,7 @@ from producer import PaymentServiceProducer
 
 fake = Faker()
 
+
 def get_consumer(topic: str) -> KafkaConsumer:
     consumer = KafkaConsumer(
         topic,
@@ -17,11 +18,12 @@ def get_consumer(topic: str) -> KafkaConsumer:
     print("Payment service listening...")
     return consumer
 
+
 def handle_order_requested():
-    consumer = get_consumer('order_requested')
-    producer = PaymentServiceProducer()  
+    consumer = get_consumer("order_requested")
+    producer = PaymentServiceProducer()
     for msg in consumer:
         order = msg.value
-        order['transaction_id'] = fake.sha256()
+        order["transaction_id"] = fake.sha256()
         print("Payment Processed", order)
         producer.publish_to_payment_processed(order)

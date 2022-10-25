@@ -1,19 +1,18 @@
+from typing import Dict
 from kafka import KafkaProducer
 import json
 import time
-from model import Order
+from model import OrderEvent
 from faker import Faker
 
 fake = Faker()
 
-def get_order():
-    order = Order(
-        user = fake.name(),
-        sale_id = fake.random_int(),
-        status = "D"
-    )
+
+def get_order() -> Dict:
+    order = OrderEvent(user=fake.name(), sale_id=fake.random_int(), status="D")
     order = order.dict()
     return order
+
 
 producer = KafkaProducer(
     bootstrap_servers=["localhost:9092"],
@@ -27,6 +26,7 @@ def main():
         print(order)
         producer.send("order_requested", order)
         time.sleep(10)
+
 
 if __name__ == "__main__":
     main()
