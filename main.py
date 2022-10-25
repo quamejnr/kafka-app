@@ -9,7 +9,8 @@ fake = Faker()
 
 
 def get_order() -> Dict:
-    order = OrderEvent(user=fake.name(), sale_id=fake.random_int(), status="D")
+    # order status being "D" depicts draft
+    order = OrderEvent(user=fake.name(), sale_id=fake.random_int(), order_status="D")
     order = order.dict()
     return order
 

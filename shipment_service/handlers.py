@@ -33,7 +33,7 @@ def handle_shipment_prepared():
     producer = ShipmentServiceProducer()
     for msg in consumer:
         order = msg.value
-        order["shipment_status"] = "A"
+        order["shipment_status"] = "A"  # Change shipment status to "A" to depict "shipment activated"
         print("Shipment dispatched", order)
         producer.publish_to_shipment_dispatched(order)
 
@@ -43,6 +43,6 @@ def handle_shipment_dispatched():
     producer = ShipmentServiceProducer()
     for msg in consumer:
         order = msg.value
-        order["shipment_status"] = "C"
+        order["shipment_status"] = "C"  # change shipment status to 'C' to depict "shipment completed"
         print("Shipment delivered", order)
         producer.publish_to_shipment_delivered(order)

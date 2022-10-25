@@ -20,7 +20,7 @@ def handle_payment_processed():
     producer = OrderServiceProducer()
     for msg in consumer:
         order = msg.value
-        order["status"] = "A"
+        order["order_status"] = "A"   # Change order status to "A" to depict order activated
         print("Order Confirmed", order)
         producer.publish_to_order_confirmed(order)
 
@@ -30,6 +30,6 @@ def handle_shipment_delivered():
     producer = OrderServiceProducer()
     for msg in consumer:
         order = msg.value
-        order["status"] = "C"
+        order["order_status"] = "C"    # Change order status to 'C' to depict order completed
         print("Order completed", order)
         producer.publish_to_order_completed(order)
