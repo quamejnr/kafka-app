@@ -1,6 +1,6 @@
 from kafka import KafkaConsumer
 import json
-from producer import OrderServiceProducer
+from order_service.producer import OrderServiceProducer
 from concurrent.futures import ThreadPoolExecutor
 
 import logging
@@ -15,47 +15,46 @@ logger.setLevel(logging.INFO)
 logger.addHandler(handler)
 
 
-def get_consumer(topic: str) -> KafkaConsumer:
+def get_consumer() -> KafkaConsumer:
     consumer = KafkaConsumer(
-        topic,
         bootstrap_servers="kafka:9092",
         auto_offset_reset="earliest",
         group_id="order-group",
         value_deserializer=lambda x: json.loads(x.decode("utf-8")),
     )
+    topics=["payment_processed", "shipment_delivered"]
+    consumer.subscribe(topics)
     return consumer
 
 
-def handle_payment_processed():
-    consumer = get_consumer("payment_processed")
+def handle_payment_processed(msg):
     producer = OrderServiceProducer()
-    for msg in consumer:
-        order = msg.value
-        order[
-            "order_status"
-        ] = "A"  # Change order status to "A" to depict order activated
-        logger.info(f"Order confirmed - {order}")
-        producer.publish_to_order_confirmed(order)
+    order = msg.value
+    order["order_status"] = "A"  # Change order status to "A" to depict order activated
+    logger.info(f"Order confirmed - {order}")
+    producer.publish_to_order_confirmed(order)
 
 
-def handle_shipment_delivered():
-    consumer = get_consumer("shipment_delivered")
+def handle_shipment_delivered(msg):
     producer = OrderServiceProducer()
+    order = msg.value
+    order["order_status"] = "C"  # Change order status to 'C' to depict order completed
+    logger.info(f"Order completed - {order}")
+    producer.publish_to_order_completed(order)
+
+
+def order_service():
+    print("Order service listening...")
+    handlers = {
+        "payment_processed": handle_payment_processed,
+        "shipment_delivered": handle_shipment_delivered,
+    }
+    consumer = get_consumer()
     for msg in consumer:
-        order = msg.value
-        order[
-            "order_status"
-        ] = "C"  # Change order status to 'C' to depict order completed
-        logger.info(f"Order completed - {order}")
-        producer.publish_to_order_completed(order)
-
-
-def main():
-    handlers = [handle_payment_processed, handle_shipment_delivered]
-    with ThreadPoolExecutor() as executor:
-        [executor.submit(handler) for handler in handlers]
+        handler = handlers.get(msg.topic)
+        if handler:
+            handler(msg)
 
 
 if __name__ == "__main__":
-    print("Order service listening...")
-    main()
+    order_service()
