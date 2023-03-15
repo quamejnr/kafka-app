@@ -4,6 +4,7 @@ services:
   python-app:
     build: .
     container_name: python-app
+    command: python3 main.py
     restart: always
     volumes:
             - .:/app
