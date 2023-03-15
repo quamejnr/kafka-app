@@ -29,11 +29,10 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: kafka
       KAFKA_ADVERTISED_PORT: 9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      # KAFKA_CREATE_TOPICS: "ACC_GROUP_CREATE:1:1"
   
   kafka-ui:
     image: provectuslabs/kafka-ui
-    container_name: inventory_kafka-ui
+    container_name: kafka-ui
     ports:
       - "8080:8080"
     restart: always
