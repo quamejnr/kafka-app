@@ -10,6 +10,7 @@ import concurrent.futures
 from order_service.handlers import order_service
 from payment_service.handlers import payment_service
 from shipment_service.handlers import shipment_service
+from utils import produce_kafka_event
 
 formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
 
@@ -30,18 +31,12 @@ def get_order() -> Dict:
     return order
 
 
-producer = KafkaProducer(
-    bootstrap_servers=["kafka:9092"],
-    value_serializer=lambda x: json.dumps(x).encode("utf-8"),
-)
-
-
 def request_order():
     while True:
         order = get_order()
         print(f"Incoming order - {order}")
         logger.info(f"Order requested - {order}")
-        producer.send("order_requested", order)
+        produce_kafka_event("order_requested", order)
         time.sleep(10)
 
 

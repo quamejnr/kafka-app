@@ -1,8 +1,6 @@
-from kafka import KafkaConsumer
-import json
 from faker import Faker
 
-from payment_service.producer import PaymentServiceProducer
+from utils import produce_kafka_event, get_consumer
 import logging
 
 formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
@@ -16,33 +14,19 @@ logger.addHandler(handler)
 
 fake = Faker()
 
-
-def get_consumer() -> KafkaConsumer:
-    consumer = KafkaConsumer(
-        bootstrap_servers="kafka:9092",
-        auto_offset_reset="earliest",
-        group_id="payment-group",
-        value_deserializer=lambda x: json.loads(x.decode("utf-8")),
-    )
-    topics = ["order_requested"]
-    consumer.subscribe(topics)
-    return consumer
-
-
 def handle_order_requested(msg):
-    producer = PaymentServiceProducer()
     order = msg.value
     order["transaction_id"] = fake.sha256()
     logger.info(f"Payment process completed - {order}")
-    producer.publish_to_payment_processed(order)
-
-
+    produce_kafka_event("payment_processed", order)
+    
 def payment_service():
     print("Payment service listening...")
     handlers = {
         "order_requested": handle_order_requested,
     }
-    consumer = get_consumer()
+    topics = ["order_requested"]
+    consumer = get_consumer("payment_group", topics)
     for msg in consumer:
         handler = handlers.get(msg.topic)
         if handler:
